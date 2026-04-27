@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import linprog
 from math import comb
+import matplotlib.pyplot as plt
 
 def krawtchouk(i, j, n):
     """Quaternary Krawtchouk polynomial K_i(j; n)"""
@@ -95,3 +96,18 @@ for n in range(2, 32):
     else:
         print(f"{n:<6} FAILED")
 print("=" * 50)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.plot(n_table, ce_table,   marker='o', color='steelblue', label=r'$C^*(n)$ — Max CE')
+ax.plot(n_table, zeta_table, marker='o', color='steelblue', linestyle='--', label=r'$\zeta(n)$ — GME Threshold')
+
+ax.set_xlabel('Number of Qubits n')
+ax.set_ylabel('Concentratable Entanglement')
+ax.set_title('Max CE vs GME Threshold')
+ax.legend()
+ax.grid(True)
+
+plt.tight_layout()
+plt.savefig('CE_same_color.png', dpi=150, bbox_inches='tight')
+plt.close()
