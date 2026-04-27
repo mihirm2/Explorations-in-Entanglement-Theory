@@ -109,5 +109,5 @@ ax.legend()
 ax.grid(True)
 
 plt.tight_layout()
-plt.savefig('CE_same_color.png', dpi=150, bbox_inches='tight')
+plt.savefig('CE_graph.png', dpi=150, bbox_inches='tight')
 plt.close()
