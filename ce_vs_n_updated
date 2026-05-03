@@ -1,0 +1,64 @@
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
+mpl.rcParams.update({
+    "text.usetex": False, "mathtext.fontset": "cm", "mathtext.rm": "serif",
+    "font.family": "serif", "font.serif": ["DejaVu Serif", "Times New Roman", "serif"],
+    "font.size": 14, "axes.labelsize": 16, "xtick.labelsize": 13,
+    "ytick.labelsize": 13, "lines.linewidth": 2.0, "axes.linewidth": 1.2,
+    "axes.spines.top": True, "axes.spines.right": True,
+    "xtick.direction": "in", "ytick.direction": "in",
+    "xtick.major.size": 5, "ytick.major.size": 5,
+    "xtick.minor.visible": True, "ytick.minor.visible": True,
+    "xtick.minor.size": 2.5, "ytick.minor.size": 2.5,
+    "axes.grid": True, "grid.linestyle": "--", "grid.alpha": 0.35,
+    "grid.linewidth": 0.7, "figure.dpi": 150, "savefig.dpi": 300, "savefig.bbox": "tight",
+})
+
+def CE(n, epsilon):
+    ep = epsilon * (1 - epsilon)
+    return 1 - (1 - ep) ** (n / 2)
+
+c = 2.0
+n_vals = np.arange(2, 101, 1)
+
+regimes = [
+    {"b": 2.0, "asymptote": 0.0,            "color": "#2176AE", "marker": "o",
+     "line1": r"CE $\to 0$",          "line2": r"($b > 1$)", "y1_offset": 0.07, "y2_offset": 0.03},
+    {"b": 1.0, "asymptote": 1-np.exp(-c/2), "color": "#2AA876", "marker": "^",
+     "line1": r"CE $\to 1-e^{-c/2}$", "line2": r"($b = 1$)",  "y1_offset": 0.01, "y2_offset": -0.035},
+    {"b": 0.5, "asymptote": 1.0,            "color": "#C0392B", "marker": "s",
+     "line1": r"CE $\to 1$",          "line2": r"($b < 1$)",  "y1_offset": 0.01, "y2_offset": -0.035},
+]
+
+fig, ax = plt.subplots(figsize=(8.5, 5.5))
+
+for reg in regimes:
+    eps_vals = c / n_vals**reg["b"]
+    ces = CE(n_vals, eps_vals)
+    ax.axhline(reg["asymptote"], color=reg["color"], linewidth=1.0, linestyle=":", alpha=0.55, zorder=1)
+    ax.plot(n_vals, ces, color=reg["color"], linewidth=1.7, alpha=0.85, zorder=2)
+    ax.scatter(n_vals[::10], ces[::10], color=reg["color"], marker=reg["marker"],
+               s=55, edgecolors="white", linewidths=0.6, zorder=4)
+    ax.annotate(reg["line1"], xy=(100, reg["asymptote"]),
+                xytext=(102, reg["asymptote"] + reg["y1_offset"]),
+                annotation_clip=False, color=reg["color"],
+                fontsize=10, va="bottom", ha="left")
+    ax.annotate(reg["line2"], xy=(100, reg["asymptote"]),
+                xytext=(102, reg["asymptote"] + reg["y2_offset"]),
+                annotation_clip=False, color=reg["color"],
+                fontsize=9, va="top", ha="left", fontstyle="italic")
+
+ax.set_xlabel(r"$n$")
+ax.set_ylabel(r"$\mathcal{C}_{|\psi\rangle}([n])$")
+ax.set_xlim(0.5, 100.5)
+ax.set_ylim(-0.05, 1.10)
+ax.set_xticks(range(0, 101, 10))
+ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+ax.set_title(r"CE of $n/2$ Weakly Entangled Bell Pairs, $\varepsilon = c/n^b$, $c = 2$",
+             fontsize=13, pad=10)
+
+fig.subplots_adjust(right=0.76)
+fig.savefig("ce_regimes.png", dpi=300, bbox_inches="tight")
+plt.show()
